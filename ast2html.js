@@ -17,7 +17,7 @@ function ast2html(ast){
         return `<div class="astrsp"><b>${x.tag}</b> <div class="astrspb">${$.type(x.item)}</div></div>`
       }else if (x.tag == "array"){
         if (x.size != null && x.size.tag == "expr" && x.size.body.length){
-          return `<div class="astrsp"><b>${x.tag}</b>${BRL}${$.dispatcher(x.size)}${BRR}<div class="astrspb">${$.type(x.item)}</div></div>`
+          return `<div class="astrsp"><b>${x.tag}</b> ${BRL}${$.dispatcher(x.size)}${BRR} <div class="astrspb">${$.type(x.item)}</div></div>`
           
         }else{
           return `<div class="astrsp"><b>${x.tag}</b> <div class="astrspb">${$.type(x.item)}</div></div>`
@@ -209,6 +209,17 @@ function ast2html(ast){
           o += "<b> , </b>"
         }
         o += $.namevalue(x.fields[k]);
+      }
+      o += `</div>`;
+      return o
+    }
+    $.arraylit = function(x){
+      let o = `<div class="ast astsp"><div class="ast asttag">array-literal</div>${$.kv('type',$.type(x.type))}${BRL}${$.kv('size',$.dispatcher(x.size))}${BRR}<div class="ast asttag">items</div>`;
+      for (var k in x.items){
+        if (k != 0){
+          o += "<b> , </b>"
+        }
+        o += `<div class="ast astrsp">${$.dispatcher(x.items[k])}</div>`;
       }
       o += `</div>`;
       return o

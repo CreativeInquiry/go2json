@@ -313,7 +313,17 @@ var go2json = new function(){let that = this;
           }else{
             i++;
             let size = tillNestEnd("[","]");
-            if (toks[i+1]=="{"){
+            let mode = 0;
+            for (var j = 0; j < toks.length; j++){
+              if (toks[j].value == "{"){
+                mode = 0;
+                break;
+              }else if (toks[j].value == "("){
+                mode = 1;
+                break;
+              }
+            }
+            if (mode==0){
               let lit = {
                 tag:"arraylit",
                 size:parseExpr(size),
