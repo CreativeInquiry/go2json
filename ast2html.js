@@ -32,7 +32,7 @@ function ast2html(ast){
       }else if (x.tag == "namespaced"){
         return `<div class="astrsp"><div class="astisp">${x.namespace}</div> &bull; <div class="astisp">${$.type(x.item)}</div></div>`
 
-      }else if (x.tag == "channel"){
+      }else if (x.tag == "chan"){
         return `<div class="astrsp"><b>${x.tag}</b> <div class="astrspb">${$.type(x.item)}</div></div>`
 
       }else if (Object.keys(x).length==1){
@@ -187,6 +187,7 @@ function ast2html(ast){
       return $.kv('number',`<span class="ast astnum">${x.value}</span>`)
     }
     $.string = function(x){
+      console.log(x);
       function escapeHTML(y) {
           return y.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       }

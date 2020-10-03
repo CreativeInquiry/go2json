@@ -51,7 +51,9 @@
   <br><br>
 
   <div style="text-align:center">
-  <span style="border-radius:5px;border:1px solid gray;text-align:center;display:inline-block;" id="sels"><span class="tab" onclick="sel(0)">Go</span><span class="tab" onclick="sel(1)">JSON</span><span class="tab tab-sel" onclick="sel(2)">AST</span></span>
+  <span style="border-radius:5px;border:1px solid gray;text-align:center;display:inline-block;" id="sels"><span class="tab" onclick="sel(0)">Go</span><span class="tab" onclick="sel(1)">JSON</span><span class="tab tab-sel" onclick="sel(2)">AST</span>
+  <!-- <span class="tab" onclick="sel(3)">Haxe</span> -->
+  </span>
   </div>
   <br>
   <span style="width:50px">&nbsp;Source:</span><input style="margin:5px;width:calc(100% - 285px);font-size:13px;height:25px" id="srcinp"></input>
@@ -61,6 +63,7 @@
 </body>
 <script src="go2json.js"></script>
 <script src="ast2html.js"></script>
+<!-- <script src="json2hx.js"></script> -->
 <script>
   var demoSrc = [
     "https://raw.githubusercontent.com/fogleman/ln/master/ln/mesh.go",
@@ -85,6 +88,7 @@
   var currsrc;
   var currast;
   var currjsn;
+  // var currhax;
   function expandta(){
     let ta = document.getElementById("ta");
     if (!ta){
@@ -105,6 +109,14 @@
     tree = go2json.go2ast(src);
     currjsn = `<pre style="border:1px solid black; border-radius:5px; padding:20px; margin:5px; font-size:15px">${escapeHTML(JSON.stringify(tree,null,2))}</pre>`;
     currast = ast2html(tree);
+    // var hx = json2hx.ast2hx(tree);
+    // var hxo = "/* Globals.hx */\nclass Globals {\n"+hx.G.split("\n").map(y=>"  "+y).join("\n")+"\n}\n\n\n";
+    // for (var k in hx){
+    //   if (k != "G"){
+    //     hxo += `/* ${k}.hx */\n`+hx[k]+"\n\n";
+    //   }
+    // }
+    // currhax = `<pre style="border:1px solid black; border-radius:5px; padding:20px; margin:5px; font-size:15px">${escapeHTML(hxo)}</pre>`;
     document.getElementById("ast").innerHTML = currast;
   }
 
@@ -121,7 +133,7 @@
   function sel(n){
     justsel(n)
     doit(currraw);
-    document.getElementById("ast").innerHTML = [currsrc,currjsn,currast][n];
+    document.getElementById("ast").innerHTML = [currsrc,currjsn,currast,/*currhax*/][n];
     expandta();
   }
 

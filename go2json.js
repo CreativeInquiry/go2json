@@ -567,8 +567,13 @@ var go2json = new function(){let that = this;
           return {tag:"lambda",...parseFuncSig(toks.slice(i+1))};
         }else if (toks[i].value == "interface"){
           return {tag:"interface"};
+        }else if (toks[i].value == "<-" && toks[i+1].value == "chan"){
+          return {tag:"chan", item:parseType(toks.slice(i+2)), mode:'i'}
+        }else if (toks[i].value == "chan" && toks[i+1].value == "<-"){
+          return {tag:"chan", item:parseType(toks.slice(i+2)), mode:'o'}
         }else if (toks[i].value == "chan"){
-          return {tag:"channel", item:parseType(toks.slice(i+1))}
+          return {tag:"chan", item:parseType(toks.slice(i+1)), mode:'io'}
+
         }else if (toks[i+1] && toks[i+1].value == "."){
           
           return {tag:"namespaced",namespace:toks[i].value,item:parseType(toks.slice(i+2))}
