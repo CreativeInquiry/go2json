@@ -1,0 +1,146 @@
+<body>
+  <style>
+    body{
+      font-family: sans-serif;
+      margin:80px;
+    }
+    .tab{
+      display:inline-block;
+      padding:10px;
+      text-align:center;
+      border-right:1px solid gray;
+      width:50px;
+      user-select:none;
+      cursor:pointer;
+    }
+    .tab-sel{
+      background: rgba(0,0,0,0.1);
+    }
+    .tab:hover{
+      background: rgba(0,0,0,0.2);
+    }
+    .tab:last-child{
+      border:none;
+    }
+    .btn{
+      height:25px;
+      width:100px;
+      border:1px solid gray;
+      border-radius:3px;
+      background:rgba(0,0,0,0.1);
+      color:black;
+      font-size:14px;
+      cursor:pointer;
+    }
+    .btn:hover{
+      background: rgba(0,0,0,0.2);
+    }
+    input{
+      background:none;
+      border:1px solid gray;
+      border-radius:3px;
+    }
+  </style>
+
+<a href="https://github.com/CreativeInquiry/go2json" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#252523; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+
+  <h1 style="font-family:sans-serif;font-weight:lighter;text-align:center;margin-bottom:10px">go2json:</h1>
+  <div style="text-align:center"><i style="font-family:serif;color:gray">A Golang &rarr; Abstract Syntax Tree &rarr; JSON &rarr; ??? Transpiler</i></div>
+  <br><br>
+
+  <div style="text-align:center">
+  <span style="border-radius:5px;border:1px solid gray;text-align:center;display:inline-block;" id="sels"><span class="tab" onclick="sel(0)">Go</span><span class="tab" onclick="sel(1)">JSON</span><span class="tab tab-sel" onclick="sel(2)">AST</span></span>
+  </div>
+  <br>
+  <span style="width:50px">&nbsp;Source:</span><input style="margin:5px;width:calc(100% - 285px);font-size:13px;height:25px" id="srcinp"></input>
+  <button class="btn" onclick="urlsrc()">fetch</button>
+  <button class="btn" onclick="randsrc()">random</button>
+  <div id="ast" style=""></div>
+</body>
+<script src="go2json.js"></script>
+<script src="ast2html.js"></script>
+<script>
+  var demoSrc = [
+    "https://raw.githubusercontent.com/fogleman/ln/master/ln/mesh.go",
+    "https://raw.githubusercontent.com/mmcgrana/gobyexample/master/examples/hello-world/hello-world.go",
+    "https://raw.githubusercontent.com/fogleman/ln/master/ln/cylinder.go",
+    "https://raw.githubusercontent.com/fogleman/ln/master/ln/path.go",
+    "https://raw.githubusercontent.com/LingDong-/skeleton-tracing/master/go/src/traceskeleton/traceskeleton.go",
+    "https://raw.githubusercontent.com/mmcgrana/gobyexample/master/examples/goroutines/goroutines.go",
+    "https://raw.githubusercontent.com/mmcgrana/gobyexample/master/examples/channels/channels.go",
+    "https://raw.githubusercontent.com/mmcgrana/gobyexample/master/examples/maps/maps.go",
+    "https://raw.githubusercontent.com/mmcgrana/gobyexample/master/examples/errors/errors.go",
+  ]
+  document.getElementById("srcinp").value = demoSrc[0];
+
+  function fetchSrc(url,callback){
+    fetch(url).then(function(res){res.text().then(function(src){
+      callback(src)
+    })});
+  }
+  var currraw;
+  var currsrc;
+  var currast;
+  var currjsn;
+  function expandta(){
+    let ta = document.getElementById("ta");
+    if (!ta){
+      return;
+    }
+    ta.style.height="";
+    ta.style.height=(ta.scrollHeight+50)+'px'
+  }
+  function escapeHTML(y) {
+
+    return y.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function doit(src){
+
+    currraw = src;
+    currsrc = `<textarea spellcheck="false" id="ta" style="font-family:monospace;font-size:15px;border:1px solid black; border-radius:5px; padding:20px; resize:none; width:100%; margin:5px" oninput="currraw=this.value">${src}</textarea>`;
+    tree = go2json.go2ast(src);
+    currjsn = `<pre style="border:1px solid black; border-radius:5px; padding:20px; margin:5px; font-size:15px">${escapeHTML(JSON.stringify(tree,null,2))}</pre>`;
+    currast = ast2html(tree);
+    document.getElementById("ast").innerHTML = currast;
+  }
+
+  fetchSrc(demoSrc[0],doit)
+
+
+  function justsel(n){
+    let ch = document.getElementById('sels').children;
+    for (var k of ch){
+      k.classList.remove('tab-sel');
+    }
+    ch[n].classList.add('tab-sel');
+  }
+  function sel(n){
+    justsel(n)
+    doit(currraw);
+    document.getElementById("ast").innerHTML = [currsrc,currjsn,currast][n];
+    expandta();
+  }
+
+  let seed = 0;
+  function randsrc(){
+    seed ++;
+    let idx = seed % demoSrc.length;
+    document.getElementById("srcinp").value = demoSrc[idx];
+    fetchSrc(demoSrc[idx],doit);
+    justsel(2);
+  }
+  function urlsrc(){
+    url = document.getElementById("srcinp").value;
+    fetchSrc(url,doit);
+    justsel(2);
+  }
+
+
+
+
+
+
+</script>
