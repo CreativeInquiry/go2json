@@ -59,10 +59,17 @@
   <span style="width:50px">&nbsp;Source:</span><input style="margin:5px;width:calc(100% - 285px);font-size:13px;height:25px" id="srcinp"></input>
   <button class="btn" onclick="urlsrc()">fetch</button>
   <button class="btn" onclick="randsrc()">random</button>
+
+  <div id="cbdv" style="text-align: right; transform:translate(-20px,20px); height:0px; display:none">
+    <input type="checkbox" id="cb" name="cb" onclick="doit(currraw);sel(1)" checked>
+    <label for="cb" style="transform:translate(0px,-1px); display:inline-block;">aligned format</label><br>
+  </div>
+
   <div id="ast" style=""></div>
 </body>
 <script src="go2json.js"></script>
 <script src="ast2html.js"></script>
+<script src="jsonfmt.js"></script>
 <!-- <script src="json2hx.js"></script> -->
 <script>
   var demoSrc = [
@@ -84,6 +91,8 @@
       callback(src)
     })});
   }
+
+
   var currraw;
   var currsrc;
   var currast;
@@ -105,9 +114,10 @@
   function doit(src){
 
     currraw = src;
-    currsrc = `<textarea spellcheck="false" id="ta" style="font-family:monospace;font-size:15px;border:1px solid black; border-radius:5px; padding:20px; resize:none; width:100%; margin:5px" oninput="currraw=this.value">${src}</textarea>`;
+    currsrc = `<textarea spellcheck="false" id="ta" style="font-family:monospace;font-size:15px;border:1px solid black; border-radius:5px; padding:20px; resize:none; width:calc(100% - 10px); margin:5px" oninput="currraw=this.value">${src}</textarea>`;
     tree = go2json.go2ast(src);
-    currjsn = `<pre style="border:1px solid black; border-radius:5px; padding:20px; margin:5px; font-size:15px">${escapeHTML(JSON.stringify(tree,null,2))}</pre>`;
+    let jsn = document.getElementById("cb").checked?fmtStringify(tree):JSON.stringify(tree,null,2);
+    currjsn = `<pre style="border:1px solid black; border-radius:5px; padding:20px; margin:5px; font-size:15px; overflow-x:scroll;">${escapeHTML(jsn)}</pre>`;
     currast = ast2html(tree);
     // var hx = json2hx.ast2hx(tree);
     // var hxo = "/* Globals.hx */\nclass Globals {\n"+hx.G.split("\n").map(y=>"  "+y).join("\n")+"\n}\n\n\n";
@@ -134,6 +144,11 @@
     justsel(n)
     doit(currraw);
     document.getElementById("ast").innerHTML = [currsrc,currjsn,currast,/*currhax*/][n];
+    if (n == 1){
+      document.getElementById("cbdv").style.display="block";
+    }else{
+      document.getElementById("cbdv").style.display="none";
+    }
     expandta();
   }
 
