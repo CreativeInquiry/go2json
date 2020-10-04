@@ -139,16 +139,17 @@
       k.classList.remove('tab-sel');
     }
     ch[n].classList.add('tab-sel');
-  }
-  function sel(n){
-    justsel(n)
-    doit(currraw);
-    document.getElementById("ast").innerHTML = [currsrc,currjsn,currast,/*currhax*/][n];
     if (n == 1){
       document.getElementById("cbdv").style.display="block";
     }else{
       document.getElementById("cbdv").style.display="none";
     }
+  }
+  function sel(n){
+    justsel(n)
+    doit(currraw);
+    document.getElementById("ast").innerHTML = [currsrc,currjsn,currast,/*currhax*/][n];
+
     expandta();
   }
 
