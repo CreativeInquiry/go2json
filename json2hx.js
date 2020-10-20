@@ -607,14 +607,14 @@ var IS_MAIN = (IS_NODE && !module.parent);
 if (IS_MAIN){
   const fs = require("fs");
   var tree = JSON.parse(fs.readFileSync(process.argv[2]).toString());
-  var hx = ast2hx(tree,0);
+  var hx = json2hx.ast2hx(tree,0);
   // console.log(hx);
   hx = Object.values(hx).join("\n\n")
   fs.writeFileSync(process.argv[3],hx)
 }
 
 if (IS_NODE){
-  module.exports = ast2hx
+  module.exports = json2hx.ast2hx
 }
 
 
